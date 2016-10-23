@@ -1,8 +1,11 @@
 var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
-var config = require('./mymlh.json');
 var googleAuth = require('google-auth-library');
+var request = require('request');
+
+var config = require('./mymlh.json');
+
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
@@ -97,25 +100,53 @@ function storeToken(token) {
 }
 
 /**
- * Upddates online doc to match attendees
+ * Updates online doc to match attendees
  *
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 function appendNew(auth) {
   var sheets = google.sheets('v4');
-  sheets.spreadsheets.values.update({
-    auth: auth,
-    spreadsheetId: config.docurl,
-    range: "Sheet1!A2:D3",
-    valueInputOption: 'USER_ENTERED',
-    resource: {
-      values: [
-        ["Door", "15", "2", "3/15/2016"],
-        ["Engine", "100", "1", "3/20/2016"]
-      ]
+  request('https://my.mlh.io/api/v2/users.json?client_id=' + config.appid + '&secret=' + config.secret, function(err, res, body) {
+    if(err) {
+      console.log('Error requesting data from mlh.io: ' + err);
+    } else if(res.statusCode != 200) {
+      console.log('Error requesting data from mlh.io: Got status code ' + res.statusCode + '. Expected status code 200.');
+    } else {
+      var data = JSON.parse(res.body).data.map(function(e) {
+        var entries = [];
+        for(x in e) {
+          if(columns.indexOf(x) > -1) {
+            if(e[x] == null) {
+              entries.push('N/A');
+            } else {
+              entries.push(e[x]);
+            }
+          }
+        }
+        return entries;
+      });
+      console.log(data);
+      sheets.spreadsheets.values.update({
+        auth: auth,
+        spreadsheetId: config.docurl,
+        range: "Sheet1!A2:H" + (data.length + 1),
+        valueInputOption: 'USER_ENTERED',
+        resource: {
+          values: data
+        }
+      }, function(err, res) {
+        if(err) console.log('The API returned an error: ' + err);
+        console.log(res);
+      });
     }
-  }, function(err, res) {
-    if(err) console.log('The API returned an error: ' + err);
-    console.log(res);
   });
 }
+
+var columns = ['id',
+ 'email',
+ 'created_at',
+ 'first_name',
+ 'last_name',
+ 'shirt_size',
+ 'dietary_restrictions',
+ 'special_needs'];
