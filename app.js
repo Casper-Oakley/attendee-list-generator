@@ -144,9 +144,9 @@ function appendNew(auth) {
 
 var columns = ['id',
  'email',
- 'created_at',
  'first_name',
  'last_name',
  'shirt_size',
  'dietary_restrictions',
- 'special_needs'];
+ 'special_needs',
+ 'phone_number'];
