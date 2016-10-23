@@ -1,0 +1,25 @@
+{
+  "name": "attendee-list-generator",
+  "version": "1.0.0",
+  "description": "A little script to update our google drive with attendee details",
+  "main": "app.js",
+  "scripts": {
+    "test": "nodejs app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/casper-oakley/attendee-list-generator.git"
+  },
+  "keywords": [
+    "script",
+    "mymlh",
+    "google",
+    "drive"
+  ],
+  "author": "Casper Oakley",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/casper-oakley/attendee-list-generator/issues"
+  },
+  "homepage": "https://github.com/casper-oakley/attendee-list-generator#readme"
+}
