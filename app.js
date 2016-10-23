@@ -1,14 +1,15 @@
 var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
+var config = require('./mymlh.json');
 var googleAuth = require('google-auth-library');
 
 // If modifying these scopes, delete your previously saved credentials
-// at ~/.credentials/drive-nodejs-quickstart.json
-var SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
+// at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
+var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'drive-nodejs-quickstart.json';
+var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
 
 // Load client secrets from a local file.
 fs.readFile('client_secret.json', function processClientSecrets(err, content) {
@@ -17,8 +18,8 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content) {
     return;
   }
   // Authorize a client with the loaded credentials, then call the
-  // Drive API.
-  authorize(JSON.parse(content), listFiles);
+  // Sheets API.
+  authorize(JSON.parse(content), appendNew);
 });
 
 /**
@@ -96,30 +97,25 @@ function storeToken(token) {
 }
 
 /**
- * Lists the names and IDs of up to 10 files.
+ * Upddates online doc to match attendees
  *
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-function listFiles(auth) {
-  var service = google.drive('v3');
-  service.files.list({
+function appendNew(auth) {
+  var sheets = google.sheets('v4');
+  sheets.spreadsheets.values.update({
     auth: auth,
-    pageSize: 10,
-    fields: "nextPageToken, files(id, name)"
-  }, function(err, response) {
-    if (err) {
-      console.log('The API returned an error: ' + err);
-      return;
+    spreadsheetId: config.docurl,
+    range: "Sheet1!A2:D3",
+    valueInputOption: 'USER_ENTERED',
+    resource: {
+      values: [
+        ["Door", "15", "2", "3/15/2016"],
+        ["Engine", "100", "1", "3/20/2016"]
+      ]
     }
-    var files = response.files;
-    if (files.length == 0) {
-      console.log('No files found.');
-    } else {
-      console.log('Files:');
-      for (var i = 0; i < files.length; i++) {
-        var file = files[i];
-        console.log('%s (%s)', file.name, file.id);
-      }
-    }
+  }, function(err, res) {
+    if(err) console.log('The API returned an error: ' + err);
+    console.log(res);
   });
 }
