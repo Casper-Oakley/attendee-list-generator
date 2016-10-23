@@ -24,6 +24,7 @@
   "homepage": "https://github.com/casper-oakley/attendee-list-generator#readme",
   "dependencies": {
     "google-auth-library": "^0.9.9",
-    "googleapis": "^14.1.0"
+    "googleapis": "^14.1.0",
+    "request": "^2.75.0"
   }
 }
