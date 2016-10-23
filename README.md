@@ -1,6 +1,9 @@
 # attendee-list-generator
 A little script to update our google drive with attendee details.
 
+## Install
+To install, git clone and npm install.
+
 ## Usage
 If you want to use this for your own hackathon, you will need to setup google API access for sheets. Information for this can be found [here.](https://console.developers.google.com/start/api?id=sheets.googleapis.com)
 
